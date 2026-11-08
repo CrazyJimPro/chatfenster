@@ -1,0 +1,75 @@
+# Baut Chatfenster für Linux (.deb) und Windows (ChatfensterSetup.exe),
+# prüft mit einem Starttest, dass WhatsApp Web den QR-Code zeigt,
+# und hängt die Dateien an das veröffentlichte Release.
+#
+# - Release auf GitHub veröffentlichen  -> bauen, testen, Dateien anhängen
+# - "Run workflow" von Hand               -> nur bauen und testen (Artefakte)
+name: Bauen und veröffentlichen
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Bauen (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-24.04
+            build: npm run dist:linux
+            smoke: xvfb-run -a node tools/smoke-test.mjs dist/linux-unpacked/chatfenster --no-sandbox
+            files: dist/*.deb
+          - name: Windows
+            os: windows-latest
+            build: npm run dist:win
+            smoke: node tools/smoke-test.mjs dist/win-unpacked/Chatfenster.exe
+            files: dist/ChatfensterSetup.exe
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Paket bauen
+        run: ${{ matrix.build }}
+
+      - name: Starttest (QR-Code erscheint)
+        run: ${{ matrix.smoke }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatfenster-${{ matrix.name }}
+          path: ${{ matrix.files }}
+          if-no-files-found: error
+
+  release:
+    name: An Release anhängen
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artefakte
+          merge-multiple: true
+
+      - name: Dateien hochladen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -la artefakte
+          gh release upload "${{ github.event.release.tag_name }}" artefakte/* \
+            --repo "${{ github.repository }}" --clobber

@@ -1,7 +1,7 @@
 {
   "name": "chatfenster",
   "productName": "Chatfenster",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Desktop-Fenster für WhatsApp Web",
   "main": "src/main.js",
   "desktopName": "chatfenster.desktop",
@@ -13,7 +13,8 @@
     "start": "electron .",
     "dev": "electron . --remote-debugging-port=9222",
     "dist:linux": "electron-builder --linux deb --publish never",
-    "dist:win": "electron-builder --win nsis --publish never"
+    "dist:win": "electron-builder --win nsis --publish never",
+    "smoke": "node tools/smoke-test.mjs"
   },
   "build": {
     "appId": "de.crazyjimpro.chatfenster",
@@ -47,14 +48,30 @@
       }
     },
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "executableName": "Chatfenster"
     },
     "nsis": {
       "oneClick": true,
       "perMachine": false,
       "artifactName": "ChatfensterSetup.${ext}",
       "shortcutName": "Chatfenster",
+      "uninstallDisplayName": "Chatfenster",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "de_DE"
+      ],
       "language": "1031"
     }
   },

@@ -24,6 +24,12 @@ function chromeUserAgent() {
 const USER_AGENT = chromeUserAgent();
 app.userAgentFallback = USER_AGENT;
 
+// Windows: gleiche Kennung wie der Installer, damit Taskleisten-Gruppierung
+// und Benachrichtigungen dem Startmenü-Eintrag zugeordnet werden.
+if (process.platform === 'win32') {
+  app.setAppUserModelId('de.crazyjimpro.chatfenster');
+}
+
 // Nur eine Instanz: ein zweiter Start holt das vorhandene Fenster nach vorn.
 if (!app.requestSingleInstanceLock()) {
   app.quit();
