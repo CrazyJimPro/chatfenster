@@ -32,7 +32,8 @@ else
   tag="$(printf '%s' "$json" | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4)"
   url="$(printf '%s' "$json" | grep -o '"browser_download_url": *"[^"]*amd64\.deb"' | head -1 | cut -d'"' -f4)"
   [ -n "$url" ] || fehler "Im neuesten Release wurde kein .deb-Paket gefunden."
-  installiert="$(dpkg-query -W -f='${Version}' chatfenster 2>/dev/null || true)"
+  # nur echte Installationen zählen (Status "ii"), nicht Reste nach dem Entfernen ("rc")
+  installiert="$(dpkg-query -W -f='${db:Status-Abbrev}|${Version}' chatfenster 2>/dev/null | sed -n 's/^ii *|//p' || true)"
   if [ -n "$installiert" ] && [ "v$installiert" = "$tag" ]; then
     echo "Chatfenster $tag ist bereits installiert – nichts zu tun."
     exit 0
