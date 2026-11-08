@@ -39,7 +39,9 @@ else
     exit 0
   fi
   echo "Lade Chatfenster $tag herunter ..."
-  curl -fL --progress-bar -o "$deb" "$url" || fehler "Download fehlgeschlagen."
+  # GitHub antwortet bei Release-Dateien zeitweise mit 504, darum mehrfach versuchen
+  curl -fL --retry 6 --retry-delay 10 --progress-bar -o "$deb" "$url" \
+    || fehler "Download fehlgeschlagen. Bitte in ein paar Minuten noch einmal versuchen."
 fi
 chmod 644 "$deb"
 
