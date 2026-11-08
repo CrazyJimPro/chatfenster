@@ -4,6 +4,9 @@
 //
 // Aufruf: node tools/smoke-test.mjs <Programmdatei> [weitere Argumente ...]
 import { spawn } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const [exe, ...extra] = process.argv.slice(2);
 if (!exe) {
@@ -14,8 +17,14 @@ if (!exe) {
 const PORT = 9333;
 const TIMEOUT_MS = 120_000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const fatal = (msg) => Object.assign(new Error(msg), { fatal: true });
 
-const child = spawn(exe, [`--remote-debugging-port=${PORT}`, ...extra], { stdio: 'inherit' });
+// Eigener, leerer Datenordner: echte Anmeldungen bleiben unberührt
+const profile = mkdtempSync(join(tmpdir(), 'chatfenster-test-'));
+const child = spawn(exe, [`--remote-debugging-port=${PORT}`, ...extra], {
+  stdio: 'inherit',
+  env: { ...process.env, CHATFENSTER_USERDATA: profile },
+});
 let exited = false;
 child.on('exit', (code) => { exited = true; console.log(`Programm beendet (Code ${code})`); });
 
@@ -50,15 +59,24 @@ async function run() {
           title: document.title,
           ua: navigator.userAgent,
           qr: !!document.querySelector('canvas'),
+          notificationWrapper: !!(window.Notification && window.Notification.chatfenster),
+          notificationPermission: window.Notification && Notification.permission,
           text: (document.body ? document.body.innerText : '').slice(0, 300),
         })`);
         if (last?.qr) {
           console.log('OK: Anmelde-QR-Code wird angezeigt.');
+          if (!last.notificationWrapper) throw fatal('Benachrichtigungs-Hülle fehlt (preload.js nicht geladen?)');
+          if (last.notificationPermission !== 'granted') {
+            throw fatal(`Benachrichtigungen nicht erlaubt (${last.notificationPermission})`);
+          }
+          console.log('OK: Benachrichtigungen erlaubt, Hülle aktiv.');
           console.log('User-Agent:', last.ua);
           return;
         }
       }
-    } catch { /* Programm startet noch */ }
+    } catch (err) {
+      if (err.fatal) throw err; // echter Fehler, kein "startet noch"
+    }
     await sleep(2000);
   }
   console.error('Letzter Seitenzustand:', JSON.stringify(last, null, 1));
@@ -73,6 +91,7 @@ try {
   code = 1;
 } finally {
   if (!exited) child.kill();
-  await sleep(1000);
+  await sleep(1500);
+  try { rmSync(profile, { recursive: true, force: true }); } catch { /* egal */ }
 }
 process.exit(code);

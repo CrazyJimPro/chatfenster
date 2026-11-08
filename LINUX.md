@@ -48,6 +48,30 @@ lassen, sonst musst du bei jedem Start neu scannen.
   wählen oder **„… zum Wörterbuch hinzufügen“**.
 - **Beenden:** Fenster schließen oder `Strg` + `Q`.
 
+## Benachrichtigungen einstellen
+
+Bei neuen Nachrichten erscheint unten rechts am Bildschirmrand eine Benachrichtigung mit Name und
+Nachrichtentext, auch wenn Chatfenster im Hintergrund liegt.
+**Ein Klick darauf** holt Chatfenster nach vorn und öffnet den Chat.
+
+1. In Chatfenster kurz `Alt` drücken, dann erscheint die Menüleiste.
+2. Menü **Einstellungen** öffnen. Dort gibt es drei Punkte:
+   - **Benachrichtigungen anzeigen**: Haken weg = gar keine Benachrichtigungen mehr.
+   - **Nachrichtentext in Benachrichtigungen zeigen**: Haken weg = es erscheint
+     nur noch „Neue Nachricht“, ohne Absender, Text und Profilbild. Gut, wenn
+     andere auf deinen Bildschirm schauen können.
+   - **Test-Benachrichtigung senden**: zeigt sofort eine Probe-Benachrichtigung.
+     Damit prüfst du, ob Linux sie durchlässt.
+3. Die Einstellungen gelten sofort und bleiben nach einem Neustart erhalten.
+
+Kommt bei der Test-Benachrichtigung nichts an: Im Startmenü
+**Benachrichtigungen** öffnen (Linux Mint: *Systemeinstellungen →
+Benachrichtigungen*) und prüfen, ob Benachrichtigungen eingeschaltet sind und
+**„Nicht stören“** aus ist.
+
+Ton und Benachrichtigungen lassen sich zusätzlich in WhatsApp selbst einstellen
+(in WhatsApp Web unter dessen eigenen Einstellungen → Benachrichtigungen). Was
+du dort abschaltest, kommt in Chatfenster auch nicht an.
 ## Auf eine neue Version aktualisieren
 
 1. Prüfen, ob es eine neue Version gibt: in Chatfenster `Alt` drücken →
@@ -98,6 +122,7 @@ auch dort abmelden.
 | QR-Code wird nach dem Scannen nicht angenommen | Handy und PC brauchen Internet. Am Handy unter **Verknüpfte Geräte** prüfen, ob schon 4 Geräte verknüpft sind (das ist das Maximum). |
 | Nach jedem Start wieder QR-Code               | Beim Scannen war der Haken **„In diesem Browser angemeldet bleiben“** aus. Einmal mit Haken neu scannen. |
 | Ich will komplett neu anfangen                 | Chatfenster schließen, Ordner `~/.config/Chatfenster` löschen, neu starten und neu scannen. |
+| Keine Benachrichtigungen                        | Siehe [Benachrichtigungen einstellen](#benachrichtigungen-einstellen): Haken unter **Einstellungen** prüfen, Test-Benachrichtigung senden, „Nicht stören“ aus. |
 | Startet gar nicht                               | Im Terminal `chatfenster` starten und die Ausgabe ansehen bzw. mitschicken. |
 
 **Wo liegt was?**

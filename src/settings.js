@@ -8,6 +8,8 @@ const path = require('path');
 const DEFAULTS = {
   bounds: { width: 1100, height: 780 },
   maximized: false,
+  notifications: true,
+  notificationPreview: true,
 };
 
 let file = null;

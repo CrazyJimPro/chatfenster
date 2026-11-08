@@ -15,13 +15,16 @@ eigenem Symbol im Startmenü und in der Taskleiste.
 | Chatfenster installieren                  | [Installieren](LINUX.md#chatfenster-installieren) | [Installieren](WINDOWS.md#chatfenster-installieren) |
 | mich mit dem Handy anmelden               | [Anmelden](LINUX.md#mit-dem-handy-anmelden) | [Anmelden](WINDOWS.md#mit-dem-handy-anmelden) |
 | wissen, wie ich es bediene                | [Benutzen](LINUX.md#chatfenster-benutzen) | [Benutzen](WINDOWS.md#chatfenster-benutzen) |
+| Benachrichtigungen ein-/ausschalten       | [Benachrichtigungen](LINUX.md#benachrichtigungen-einstellen) | [Benachrichtigungen](WINDOWS.md#benachrichtigungen-einstellen) |
 | auf eine neue Version aktualisieren       | [Aktualisieren](LINUX.md#auf-eine-neue-version-aktualisieren) | [Aktualisieren](WINDOWS.md#auf-eine-neue-version-aktualisieren) |
 | Chatfenster wieder entfernen              | [Deinstallieren](LINUX.md#chatfenster-deinstallieren) | [Deinstallieren](WINDOWS.md#chatfenster-deinstallieren) |
 | nachsehen, warum etwas nicht klappt       | [Hilfe bei Problemen](LINUX.md#wenn-etwas-nicht-klappt) | [Hilfe bei Problemen](WINDOWS.md#wenn-etwas-nicht-klappt) |
 
-## Was Chatfenster kann (Version 0.2.0)
+## Was Chatfenster kann (Version 0.3.0)
 
 - WhatsApp Web in einem eigenen Fenster, Anmeldung bleibt nach dem Neustart erhalten
+- Desktop-Benachrichtigungen bei neuen Nachrichten; ein Klick holt das Fenster nach vorn.
+  Abschaltbar, auf Wunsch ohne Nachrichtentext
 - Links aus Chats öffnen sich in deinem normalen Browser
 - Dateien und Bilder landen direkt im Ordner **Downloads**
 - Rechtschreibprüfung Deutsch/Englisch, Rechtsklick zeigt Vorschläge
@@ -29,8 +32,8 @@ eigenem Symbol im Startmenü und in der Taskleiste.
 - Startest du Chatfenster ein zweites Mal, kommt einfach das offene Fenster nach vorn
 - Menü **Hilfe → Nach Updates suchen**
 
-Geplant: Benachrichtigungen, Symbol im Infobereich mit Zähler für ungelesene
-Chats, Autostart, Dunkelmodus und Zoom.
+Geplant: Symbol im Infobereich mit Zähler für ungelesene Chats, Autostart,
+Dunkelmodus und Zoom.
 
 ## Technik (für Neugierige)
 

@@ -1,6 +1,6 @@
 // Chatfenster – eigenes Desktop-Fenster für WhatsApp Web
 const {
-  app, BrowserWindow, Menu, shell, session, screen, dialog, net,
+  app, BrowserWindow, Menu, shell, session, screen, dialog, net, ipcMain,
 } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -30,6 +30,11 @@ if (process.platform === 'win32') {
   app.setAppUserModelId('de.crazyjimpro.chatfenster');
 }
 
+// Für Tests: eigener Datenordner, damit die echte Anmeldung unberührt bleibt
+if (process.env.CHATFENSTER_USERDATA) {
+  app.setPath('userData', path.resolve(process.env.CHATFENSTER_USERDATA));
+}
+
 // Nur eine Instanz: ein zweiter Start holt das vorhandene Fenster nach vorn.
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -45,6 +50,43 @@ function showWindow() {
 }
 
 app.on('second-instance', showWindow);
+
+// --- Benachrichtigungen (Hülle in preload.js) -----------------------------
+function fromOurWindow(event) {
+  return win && !win.isDestroyed() && event.sender === win.webContents;
+}
+
+ipcMain.on('chatfenster:notification-settings', (event) => {
+  event.returnValue = {
+    enabled: settings.get('notifications') !== false,
+    preview: settings.get('notificationPreview') !== false,
+  };
+});
+
+ipcMain.on('chatfenster:notification-shown', (event) => {
+  // Taskleisten-Eintrag blinken lassen, solange das Fenster im Hintergrund ist
+  if (fromOurWindow(event) && !win.isFocused()) win.flashFrame(true);
+});
+
+ipcMain.on('chatfenster:notification-click', (event) => {
+  if (fromOurWindow(event)) showWindow();
+});
+
+function sendTestNotification() {
+  if (!win) return;
+  if (settings.get('notifications') === false) {
+    dialog.showMessageBox(win, {
+      type: 'info',
+      title: 'Benachrichtigungen sind aus',
+      message: 'Benachrichtigungen sind ausgeschaltet.',
+      detail: 'Schalte sie unter Einstellungen → Benachrichtigungen anzeigen ein.',
+    });
+    return;
+  }
+  win.webContents.executeJavaScript(
+    "new Notification('Chatfenster', { body: 'So sehen deine Benachrichtigungen aus.' }); true",
+  ).catch((err) => console.warn('Test-Benachrichtigung fehlgeschlagen:', err.message));
+}
 
 function isWhatsAppUrl(url) {
   try {
@@ -261,6 +303,25 @@ function buildMenu() {
       ],
     },
     {
+      label: 'Einstellungen',
+      submenu: [
+        {
+          label: 'Benachrichtigungen anzeigen',
+          type: 'checkbox',
+          checked: settings.get('notifications') !== false,
+          click: (item) => settings.set('notifications', item.checked),
+        },
+        {
+          label: 'Nachrichtentext in Benachrichtigungen zeigen',
+          type: 'checkbox',
+          checked: settings.get('notificationPreview') !== false,
+          click: (item) => settings.set('notificationPreview', item.checked),
+        },
+        { type: 'separator' },
+        { label: 'Test-Benachrichtigung senden', click: sendTestNotification },
+      ],
+    },
+    {
       label: 'Hilfe',
       submenu: [
         { label: 'Nach Updates suchen', click: checkForUpdates },
@@ -300,11 +361,13 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
       spellcheck: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
   if (settings.get('maximized')) win.maximize();
   win.once('ready-to-show', () => win.show());
+  win.on('focus', () => win.flashFrame(false));
   trackWindowState();
 
   const wc = win.webContents;
