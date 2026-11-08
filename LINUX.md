@@ -1,0 +1,110 @@
+# Chatfenster unter Linux
+
+Gilt für Linux Mint, Ubuntu und Debian (64 Bit). Zurück zur
+[Übersicht](README.md).
+
+## Chatfenster installieren
+
+1. Öffne ein **Terminal** (Startmenü → „Terminal“, oder `Strg` + `Alt` + `T`).
+2. Kopiere diesen Befehl hinein und drücke `Enter`:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/CrazyJimPro/chatfenster/main/installscript/install.sh | bash
+   ```
+
+3. Das Skript sucht die neueste Version und lädt sie herunter (ca. 100 MB,
+   ein Fortschrittsbalken läuft durch).
+4. Es fragt **einmal dein Passwort** ab (`[sudo] Passwort für …`). Beim Tippen
+   erscheinen keine Sternchen – das ist normal. Mit `Enter` bestätigen.
+5. Am Ende steht **„Fertig!“**. Chatfenster ist jetzt im Startmenü unter
+   **Internet** zu finden.
+
+> Falls `curl` fehlt, meldet das Skript das. Dann zuerst
+> `sudo apt install curl` ausführen und Schritt 2 wiederholen.
+
+## Mit dem Handy anmelden
+
+Das musst du nur beim ersten Start machen – danach bleibst du angemeldet.
+
+1. Starte **Chatfenster** aus dem Startmenü.
+2. Im Fenster erscheint **„Zum Anmelden scannen“** mit einem QR-Code.
+3. Auf dem Handy: WhatsApp öffnen → **Einstellungen** (iPhone) bzw. **⋮**
+   (Android) → **Verknüpfte Geräte** → **Gerät hinzufügen**.
+4. Halte die Handykamera auf den QR-Code. Nach ein paar Sekunden erscheinen
+   deine Chats.
+
+Den Haken **„In diesem Browser angemeldet bleiben“** unter dem QR-Code drin
+lassen, sonst musst du bei jedem Start neu scannen.
+
+## Chatfenster benutzen
+
+- **Menüleiste einblenden:** Die Leiste ist versteckt. Drück kurz `Alt`, dann
+  erscheinen **Datei, Bearbeiten, Ansicht, Hilfe**.
+- **Neu laden**, falls etwas hängt: `F5`.
+- **Links** aus Chats öffnen sich in deinem normalen Browser.
+- **Dateien/Bilder herunterladen:** landen direkt in **Downloads**. Ein
+  Hinweis zeigt den Dateinamen, **„Ordner öffnen“** springt hin.
+- **Rechtschreibung:** rot unterstrichene Wörter rechts anklicken → Vorschlag
+  wählen oder **„… zum Wörterbuch hinzufügen“**.
+- **Beenden:** Fenster schließen oder `Strg` + `Q`.
+
+## Auf eine neue Version aktualisieren
+
+1. Prüfen, ob es eine neue Version gibt: in Chatfenster `Alt` drücken →
+   **Hilfe → Nach Updates suchen**.
+2. Wenn ja: Chatfenster schließen und **denselben Befehl wie bei der
+   Installation** im Terminal ausführen:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/CrazyJimPro/chatfenster/main/installscript/install.sh | bash
+   ```
+
+3. Passwort eingeben, fertig. Deine Anmeldung bleibt erhalten.
+
+Ist schon die neueste Version drauf, meldet das Skript
+**„… ist bereits installiert – nichts zu tun.“**
+
+## Chatfenster deinstallieren
+
+1. Terminal öffnen und ausführen:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/CrazyJimPro/chatfenster/main/installscript/uninstall.sh | bash
+   ```
+
+2. Passwort eingeben.
+3. Das Skript fragt: **„Auch löschen? [j/N]“**
+   - `j` → deine Anmeldung und Einstellungen werden gelöscht (beim nächsten
+     Installieren musst du neu scannen).
+   - `Enter` → sie bleiben erhalten.
+
+Tipp: Auf dem Handy unter **Verknüpfte Geräte** kannst du das Gerät danach
+auch dort abmelden.
+
+## Wenn etwas nicht klappt
+
+**Wo stehen Fehlermeldungen?**
+
+- Logbuch: `~/.config/Chatfenster/logs/chatfenster.log`
+  (schnell erreichbar über `Alt` → **Hilfe → Logordner öffnen**)
+- Noch mehr Ausgaben: Chatfenster schließen und im Terminal mit
+  `chatfenster` starten – alles erscheint dann direkt dort.
+
+**Häufige Fälle**
+
+| Was passiert                                   | Was hilft |
+|-----------------------------------------------|-----------|
+| Fenster bleibt leer / „Verbindung wird hergestellt …“ | Internet prüfen. Chatfenster versucht es alle 10 Sekunden selbst neu. `F5` lädt sofort neu. |
+| QR-Code wird nach dem Scannen nicht angenommen | Handy und PC brauchen Internet. Am Handy unter **Verknüpfte Geräte** prüfen, ob schon 4 Geräte verknüpft sind (das ist das Maximum). |
+| Nach jedem Start wieder QR-Code               | Beim Scannen war der Haken **„In diesem Browser angemeldet bleiben“** aus. Einmal mit Haken neu scannen. |
+| Ich will komplett neu anfangen                 | Chatfenster schließen, Ordner `~/.config/Chatfenster` löschen, neu starten und neu scannen. |
+| Startet gar nicht                               | Im Terminal `chatfenster` starten und die Ausgabe ansehen bzw. mitschicken. |
+
+**Wo liegt was?**
+
+| Was                         | Ort |
+|-----------------------------|-----|
+| Programm                    | `/opt/Chatfenster` |
+| Startmenü-Eintrag           | `/usr/share/applications/chatfenster.desktop` |
+| Anmeldung, Einstellungen    | `~/.config/Chatfenster` |
+| Logbuch                     | `~/.config/Chatfenster/logs/chatfenster.log` |

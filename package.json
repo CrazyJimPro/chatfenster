@@ -1,0 +1,65 @@
+{
+  "name": "chatfenster",
+  "productName": "Chatfenster",
+  "version": "0.1.0",
+  "description": "Desktop-Fenster für WhatsApp Web",
+  "main": "src/main.js",
+  "desktopName": "chatfenster.desktop",
+  "author": "CrazyJimPro <c.jung2811@web.de>",
+  "license": "MIT",
+  "homepage": "https://github.com/CrazyJimPro/chatfenster",
+  "repository": "github:CrazyJimPro/chatfenster",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --remote-debugging-port=9222",
+    "dist:linux": "electron-builder --linux deb --publish never",
+    "dist:win": "electron-builder --win nsis --publish never"
+  },
+  "build": {
+    "appId": "de.crazyjimpro.chatfenster",
+    "productName": "Chatfenster",
+    "artifactName": "Chatfenster-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**",
+      "assets/**",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "category": "Network;InstantMessaging",
+      "icon": "assets/icon.png",
+      "executableName": "chatfenster",
+      "synopsis": "Desktop-Fenster für WhatsApp Web",
+      "maintainer": "CrazyJimPro <c.jung2811@web.de>",
+      "syncDesktopName": true,
+      "desktop": {
+        "entry": {
+          "Name": "Chatfenster",
+          "Comment": "Desktop-Fenster für WhatsApp Web",
+          "Keywords": "WhatsApp;Chat;Messenger;",
+          "StartupWMClass": "chatfenster"
+        }
+      }
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "ChatfensterSetup.${ext}",
+      "shortcutName": "Chatfenster",
+      "language": "1031"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  }
+}
