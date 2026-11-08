@@ -42,7 +42,7 @@ lassen, sonst musst du bei jedem Start neu scannen.
 ## Chatfenster benutzen
 
 - **Menüleiste einblenden:** Die Leiste ist versteckt. Drück kurz `Alt`, dann
-  erscheinen **Datei, Bearbeiten, Ansicht, Hilfe**.
+  erscheinen **Datei, Bearbeiten, Ansicht, Einstellungen, Hilfe**.
 - **Neu laden**, falls etwas hängt: `F5`.
 - **Links** aus Chats öffnen sich in deinem normalen Browser.
 - **Dateien/Bilder herunterladen:** landen direkt in **Downloads**. Der
@@ -50,7 +50,34 @@ lassen, sonst musst du bei jedem Start neu scannen.
   Hinweis den Dateinamen. **„Ordner öffnen“** springt hin.
 - **Rechtschreibung:** rot unterstrichene Wörter rechts anklicken, einen
   Vorschlag wählen oder **„… zum Wörterbuch hinzufügen“**.
-- **Beenden:** Fenster schließen oder `Strg` + `Q`.
+- **Beenden:** `Strg` + `Q`. Das **X** versteckt das Fenster nur, siehe
+  [Das Symbol im Infobereich](#das-symbol-im-infobereich).
+
+## Das Symbol im Infobereich
+
+Solange Chatfenster läuft, liegt sein Symbol unten rechts neben der Uhr. Hast du
+ungelesene Chats, zeigt ein **roter Kreis mit Zahl** an, wie viele es sind
+(ab 10 steht dort „9+“). Die Zahl erscheint auch am Symbol in der Taskleiste.
+
+- **Klick auf das Symbol:** holt das Fenster nach vorn.
+- **Rechtsklick:** Menü mit **Chatfenster öffnen** und **Beenden**.
+
+Windows versteckt neue Symbole gern hinter dem **Pfeil ^** neben der Uhr. Damit
+es immer sichtbar ist, zieh das Symbol von dort mit der Maus in die Leiste.
+
+**Fenster schließen heißt jetzt verstecken:** Mit dem **X** verschwindet nur das
+Fenster. Chatfenster läuft im Hintergrund weiter, du bekommst also weiter
+Benachrichtigungen. Beim allerersten Schließen fragt Chatfenster, ob du das so
+möchtest (**Weiterlaufen** oder **Beenden**).
+
+**Ganz beenden** kannst du es so:
+
+- `Strg` + `Q` im Fenster, oder
+- Rechtsklick auf das Symbol → **Beenden**.
+
+**Lieber wie früher?** `Alt` drücken → **Einstellungen** → Haken bei **Beim
+Schließen im Infobereich weiterlaufen** entfernen. Dann beendet das **X**
+Chatfenster wieder ganz.
 
 ## Benachrichtigungen einstellen
 
@@ -81,6 +108,7 @@ Kommt bei der Test-Benachrichtigung nichts an:
 Ton und Benachrichtigungen lassen sich zusätzlich in WhatsApp selbst einstellen
 (in WhatsApp Web unter dessen eigenen Einstellungen → Benachrichtigungen). Was
 du dort abschaltest, kommt in Chatfenster auch nicht an.
+
 ## Auf eine neue Version aktualisieren
 
 1. Prüfen, ob es eine neue Version gibt: in Chatfenster `Alt` drücken →
@@ -88,7 +116,7 @@ du dort abschaltest, kommt in Chatfenster auch nicht an.
 2. Wenn ja: **Release-Seite öffnen** klicken (oder den Link aus
    [Installieren, Schritt 1](#chatfenster-installieren) benutzen) und
    **ChatfensterSetup.exe** herunterladen.
-3. **Chatfenster schließen.**
+3. **Chatfenster beenden** (`Strg` + `Q`, das **X** reicht nicht).
 4. Die neue **ChatfensterSetup.exe** ausführen, wie bei der Installation
    (Schritte 3 bis 5). Sie ersetzt die alte Version, deine Anmeldung bleibt
    erhalten.
@@ -122,9 +150,10 @@ auch dort abmelden.
 | Fenster bleibt leer / „Verbindung wird hergestellt …“ | Internet prüfen. Chatfenster versucht es alle 10 Sekunden selbst neu. `F5` lädt sofort neu. |
 | QR-Code wird nach dem Scannen nicht angenommen | Handy und PC brauchen Internet. Am Handy unter **Verknüpfte Geräte** prüfen, ob schon 4 Geräte verknüpft sind (das ist das Maximum). |
 | Nach jedem Start wieder QR-Code               | Beim Scannen war der Haken **„In diesem Browser angemeldet bleiben“** aus. Einmal mit Haken neu scannen. |
-| Ich will komplett neu anfangen                 | Chatfenster schließen, Ordner `%APPDATA%\Chatfenster` löschen, neu starten und neu scannen. |
+| Ich will komplett neu anfangen                 | Chatfenster beenden (`Strg` + `Q`), Ordner `%APPDATA%\Chatfenster` löschen, neu starten und neu scannen. |
 | Keine Benachrichtigungen                        | Siehe [Benachrichtigungen einstellen](#benachrichtigungen-einstellen): Haken unter **Einstellungen** prüfen, Test-Benachrichtigung senden, Windows-Einstellungen prüfen. |
-| Installer meldet, Chatfenster laufe noch      | Chatfenster schließen. Wenn es hängt: Task-Manager (`Strg` + `Umschalt` + `Esc`) → **Chatfenster** → **Task beenden**. |
+| Fenster ist weg, Programm läuft noch            | Das **X** versteckt nur. Klick auf das Symbol neben der Uhr (eventuell hinter dem Pfeil **^**) oder Chatfenster aus dem Startmenü starten holt es zurück. |
+| Installer meldet, Chatfenster laufe noch      | Chatfenster beenden (`Strg` + `Q` oder Rechtsklick auf das Symbol → **Beenden**). Wenn es hängt: Task-Manager (`Strg` + `Umschalt` + `Esc`) → **Chatfenster** → **Task beenden**. |
 
 **Wo liegt was?**
 

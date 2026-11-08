@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const settings = require('./settings');
 const log = require('./log');
+const tray = require('./tray');
 
 const APP_URL = 'https://web.whatsapp.com/';
 const PARTITION = 'persist:chatfenster';
@@ -41,6 +42,8 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let win = null;
+let quitting = false;
+let askingCloseBehaviour = false;
 
 function showWindow() {
   if (!win) return;
@@ -50,6 +53,40 @@ function showWindow() {
 }
 
 app.on('second-instance', showWindow);
+app.on('before-quit', () => { quitting = true; });
+
+// Beim allerersten Schließen fragen, statt das Fenster still zu verstecken:
+// Wer das nicht kennt, hält das Programm sonst für beendet.
+async function askCloseBehaviour() {
+  if (askingCloseBehaviour) return;
+  askingCloseBehaviour = true;
+  const { response } = await dialog.showMessageBox(win, {
+    type: 'question',
+    title: 'Chatfenster schließen',
+    message: 'Soll Chatfenster beim Schließen im Infobereich weiterlaufen?',
+    detail: 'Dann bekommst du weiter Benachrichtigungen und siehst ungelesene Chats '
+      + 'am Symbol neben der Uhr. Beenden kannst du es dann mit Strg+Q oder über '
+      + 'das Symbol.\n\nÄndern kannst du das jederzeit unter Einstellungen.',
+    buttons: ['Weiterlaufen', 'Beenden'],
+    defaultId: 0,
+    cancelId: 0,
+  });
+  askingCloseBehaviour = false;
+  if (!win) return;
+  const keepRunning = response === 0;
+  settings.set('closeHintShown', true);
+  settings.set('closeToTray', keepRunning);
+  buildMenu();
+  if (keepRunning) win.hide();
+  else app.quit();
+}
+
+function handleClose(event) {
+  if (quitting || settings.get('closeToTray') === false) return; // wirklich beenden
+  event.preventDefault();
+  if (settings.get('closeHintShown')) win.hide();
+  else askCloseBehaviour();
+}
 
 // --- Benachrichtigungen (Hülle in preload.js) -----------------------------
 function fromOurWindow(event) {
@@ -319,6 +356,16 @@ function buildMenu() {
         },
         { type: 'separator' },
         { label: 'Test-Benachrichtigung senden', click: sendTestNotification },
+        { type: 'separator' },
+        {
+          label: 'Beim Schließen im Infobereich weiterlaufen',
+          type: 'checkbox',
+          checked: settings.get('closeToTray') !== false,
+          click: (item) => {
+            settings.set('closeToTray', item.checked);
+            settings.set('closeHintShown', true); // Frage ist damit beantwortet
+          },
+        },
       ],
     },
     {
@@ -355,6 +402,9 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#111b21',
+    // backgroundThrottling bewusst NICHT abschalten: Sonst gilt die Seite auch im
+    // versteckten Fenster als sichtbar, und WhatsApp zeigt keine Benachrichtigungen
+    // mehr bzw. könnte Nachrichten als gelesen markieren.
     webPreferences: {
       partition: PARTITION,
       contextIsolation: true,
@@ -369,13 +419,19 @@ function createWindow() {
   win.once('ready-to-show', () => win.show());
   win.on('focus', () => win.flashFrame(false));
   trackWindowState();
+  win.on('close', handleClose);
+  // Windows fährt herunter oder meldet ab: nicht verstecken, sondern beenden
+  win.on('session-end', () => { quitting = true; });
 
   const wc = win.webContents;
 
-  // Seitentitel von WhatsApp ("(3) WhatsApp") als Fenstertitel übernehmen
+  // Seitentitel von WhatsApp ("(3) WhatsApp") als Fenstertitel übernehmen;
+  // die Zahl darin ist die Anzahl der Chats mit ungelesenen Nachrichten
   win.on('page-title-updated', (e, title) => {
     e.preventDefault();
     win.setTitle(title.replace(/WhatsApp/g, 'Chatfenster'));
+    const match = /^\((\d+)\)/.exec(title);
+    tray.setUnread(match ? Number(match[1]) : 0);
   });
 
   // Fremde Links im normalen Browser öffnen, nie im App-Fenster
@@ -415,6 +471,7 @@ app.whenReady().then(() => {
   setupSession(session.fromPartition(PARTITION));
   buildMenu();
   createWindow();
+  tray.init({ show: showWindow, getWindow: () => win });
 });
 
 app.on('window-all-closed', () => app.quit());

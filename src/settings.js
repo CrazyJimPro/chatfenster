@@ -10,6 +10,8 @@ const DEFAULTS = {
   maximized: false,
   notifications: true,
   notificationPreview: true,
+  closeToTray: true,
+  closeHintShown: false,
 };
 
 let file = null;

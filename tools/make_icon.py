@@ -1,12 +1,15 @@
-"""Erzeugt assets/icon.png (512 px), assets/icon.ico und assets/tray.png.
+"""Erzeugt assets/icon.png (512 px), assets/icon.ico und assets/tray/
+(Symbole für den Infobereich und die Windows-Taskleiste, mit Zähler 1-9 und 9+).
 
-Aufruf: python3 tools/make_icon.py  (braucht Pillow)
+Aufruf: python3 tools/make_icon.py  (braucht Pillow und die Schrift DejaVu Sans)
 """
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 S = 1024  # Zeichengröße, wird danach herunterskaliert
 OUT = Path(__file__).resolve().parent.parent / "assets"
+FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+TRAY_SIZES = [(16, 16), (20, 20), (24, 24), (32, 32), (48, 48), (64, 64)]
 
 
 def gradient(size, top, bottom):
@@ -43,6 +46,25 @@ def draw():
     return img
 
 
+def badge(text, diameter):
+    """Roter Kreis mit weißer Zahl, Größe in Zeichen-Pixeln."""
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    # Weißer Rand, damit sich der Kreis auch vom Indigo-Symbol abhebt
+    border = diameter // 16
+    x0 = S - diameter
+    d.ellipse((x0, x0, S - 1, S - 1), fill=(255, 255, 255, 255))
+    d.ellipse((x0 + border, x0 + border, S - 1 - border, S - 1 - border), fill=(220, 38, 38, 255))
+    font = ImageFont.truetype(FONT, round(diameter * (0.74 if len(text) == 1 else 0.56)))
+    d.text((x0 + diameter / 2, x0 + diameter / 2), text, font=font, fill=(255, 255, 255, 255), anchor="mm")
+    return img
+
+
+def tray_states():
+    """(Dateiname-Zusatz, Text) für jeden Zähler-Stand."""
+    return [(str(n), str(n)) for n in range(1, 10)] + [("9plus", "9+")]
+
+
 def main():
     OUT.mkdir(exist_ok=True)
     big = draw()
@@ -50,7 +72,24 @@ def main():
     big.resize((256, 256), Image.LANCZOS).save(
         OUT / "icon.ico", sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
     )
-    big.resize((64, 64), Image.LANCZOS).save(OUT / "tray.png")
+
+    tray = OUT / "tray"
+    tray.mkdir(exist_ok=True)
+
+    def save(img, name, sizes):
+        # PNG für Linux, ICO für Windows (dort je Größe scharf statt skaliert)
+        img.resize((64, 64), Image.LANCZOS).save(tray / f"{name}.png")
+        img.resize((256, 256), Image.LANCZOS).save(tray / f"{name}.ico", sizes=sizes)
+
+    save(big, "tray", TRAY_SIZES)
+    for suffix, text in tray_states():
+        # Infobereich: Symbol mit Zähler; der Kreis ist groß, damit die Zahl
+        # auch bei 16 Pixeln lesbar bleibt
+        state = big.copy()
+        state.alpha_composite(badge(text, round(S * 0.72)))
+        save(state, f"tray-{suffix}", TRAY_SIZES)
+        # Windows-Taskleiste: nur der Kreis, wird über das Programmsymbol gelegt
+        save(badge(text, S), f"badge-{suffix}", [(16, 16), (20, 20), (24, 24), (32, 32)])
     print("Symbole geschrieben nach", OUT)
 
 

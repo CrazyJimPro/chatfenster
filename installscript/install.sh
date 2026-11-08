@@ -43,6 +43,14 @@ else
 fi
 chmod 644 "$deb"
 
+# Läuft Chatfenster noch (auch versteckt im Infobereich), sauber beenden,
+# damit nach dem Update nicht weiter die alte Version läuft.
+if pgrep -x chatfenster >/dev/null 2>&1; then
+  echo "Beende das laufende Chatfenster ..."
+  pkill -x chatfenster || true
+  sleep 2
+fi
+
 echo "Installiere (dafür wird einmal dein Passwort abgefragt) ..."
 sudo apt-get install -y "$deb"
 
