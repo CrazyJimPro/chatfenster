@@ -49,6 +49,29 @@ jobs:
       - name: Starttest (QR-Code erscheint)
         run: ${{ matrix.smoke }}
 
+      - name: Installer testen (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Start-Process dist\ChatfensterSetup.exe -ArgumentList '/S' -Wait
+          Start-Sleep -Seconds 3
+          Stop-Process -Name Chatfenster -ErrorAction SilentlyContinue
+          $exe = "$env:LOCALAPPDATA\Programs\Chatfenster\Chatfenster.exe"
+          if (-not (Test-Path $exe)) { throw "Nicht installiert: $exe" }
+          $lnk = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Chatfenster.lnk"
+          if (-not (Test-Path $lnk)) { throw "Startmenü-Eintrag fehlt: $lnk" }
+          Write-Host "Installiert: $exe"
+          node tools/smoke-test.mjs $exe
+
+      - name: Paket testen (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ./dist/*.deb
+          test -x /opt/Chatfenster/chatfenster
+          test -f /usr/share/applications/chatfenster.desktop
+          xvfb-run -a node tools/smoke-test.mjs /usr/bin/chatfenster --no-sandbox
+
       - uses: actions/upload-artifact@v4
         with:
           name: chatfenster-${{ matrix.name }}
