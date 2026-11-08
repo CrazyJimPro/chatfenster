@@ -13,6 +13,8 @@ const DEFAULTS = {
   closeToTray: true,
   closeHintShown: false,
   autostartHidden: false,
+  theme: 'system', // 'system', 'light' oder 'dark'
+  zoom: 1,
 };
 
 let file = null;

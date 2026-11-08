@@ -1,6 +1,6 @@
 // Chatfenster – eigenes Desktop-Fenster für WhatsApp Web
 const {
-  app, BrowserWindow, Menu, shell, session, screen, dialog, net, ipcMain,
+  app, BrowserWindow, Menu, shell, session, screen, dialog, net, ipcMain, nativeTheme,
 } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -124,6 +124,46 @@ function sendTestNotification() {
   win.webContents.executeJavaScript(
     "new Notification('Chatfenster', { body: 'So sehen deine Benachrichtigungen aus.' }); true",
   ).catch((err) => console.warn('Test-Benachrichtigung fehlgeschlagen:', err.message));
+}
+
+// --- Darstellung ------------------------------------------------------------
+const windowBackground = () => (nativeTheme.shouldUseDarkColors ? '#111b21' : '#f0f2f5');
+
+// themeSource steuert prefers-color-scheme und die Dialoge des Programms.
+// WhatsApp merkt sich zusätzlich eine eigene Wahl im localStorage, die sonst
+// gewinnen würde, und liest das Schema nur beim Laden: deshalb beides setzen
+// und neu laden. "Wie das System" löscht die Wahl wieder (WhatsApp-Standard).
+async function setTheme(theme) {
+  settings.set('theme', theme);
+  nativeTheme.themeSource = theme;
+  if (!win) return;
+  win.setBackgroundColor(windowBackground());
+  const script = theme === 'system'
+    ? "localStorage.removeItem('theme'); localStorage.removeItem('system-theme-mode');"
+    : `localStorage.setItem('theme', ${JSON.stringify(JSON.stringify(theme))});`
+      + " localStorage.setItem('system-theme-mode', 'false');";
+  try {
+    await win.webContents.executeJavaScript(`${script} true`);
+  } catch (err) {
+    console.warn('WhatsApp-Darstellung nicht gesetzt:', err.message);
+  }
+  win.webContents.reload();
+}
+
+// --- Zoom -------------------------------------------------------------------
+const ZOOM_STEPS = [0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
+
+function setZoom(factor) {
+  settings.set('zoom', factor);
+  if (win) win.webContents.setZoomFactor(factor);
+}
+
+function zoomStep(direction) {
+  const current = settings.get('zoom') || 1;
+  const next = direction > 0
+    ? ZOOM_STEPS.find((s) => s > current + 0.001)
+    : [...ZOOM_STEPS].reverse().find((s) => s < current - 0.001);
+  if (next) setZoom(next);
 }
 
 function isWhatsAppUrl(url) {
@@ -335,6 +375,31 @@ function buildMenu() {
     {
       label: 'Ansicht',
       submenu: [
+        {
+          label: 'Darstellung',
+          submenu: [
+            ['system', 'Wie das System'],
+            ['light', 'Hell'],
+            ['dark', 'Dunkel'],
+          ].map(([theme, label]) => ({
+            id: `theme-${theme}`,
+            label,
+            type: 'radio',
+            checked: (settings.get('theme') || 'system') === theme,
+            click: () => setTheme(theme),
+          })),
+        },
+        { type: 'separator' },
+        { id: 'zoom-in', label: 'Vergrößern', accelerator: 'CmdOrCtrl+Plus', click: () => zoomStep(1) },
+        { id: 'zoom-out', label: 'Verkleinern', accelerator: 'CmdOrCtrl+-', click: () => zoomStep(-1) },
+        { id: 'zoom-reset', label: 'Originalgröße', accelerator: 'CmdOrCtrl+0', click: () => setZoom(1) },
+        // Unsichtbar, nur für die Tastatur: "+" ohne Umschalt (deutsche Tastatur)
+        // und der Ziffernblock sind für Electron andere Tasten
+        { label: 'Vergrößern', accelerator: 'CmdOrCtrl+=', visible: false, click: () => zoomStep(1) },
+        { label: 'Vergrößern', accelerator: 'CmdOrCtrl+numadd', visible: false, click: () => zoomStep(1) },
+        { label: 'Verkleinern', accelerator: 'CmdOrCtrl+numsub', visible: false, click: () => zoomStep(-1) },
+        { label: 'Originalgröße', accelerator: 'CmdOrCtrl+num0', visible: false, click: () => setZoom(1) },
+        { type: 'separator' },
         { label: 'Vollbild', role: 'togglefullscreen' },
         { type: 'separator' },
         { label: 'Entwicklerwerkzeuge', accelerator: 'CmdOrCtrl+Shift+I', role: 'toggleDevTools' },
@@ -419,7 +484,7 @@ function createWindow() {
     icon: ICON,
     show: false,
     autoHideMenuBar: true,
-    backgroundColor: '#111b21',
+    backgroundColor: windowBackground(),
     // backgroundThrottling bewusst NICHT abschalten: Sonst gilt die Seite auch im
     // versteckten Fenster als sichtbar, und WhatsApp zeigt keine Benachrichtigungen
     // mehr bzw. könnte Nachrichten als gelesen markieren.
@@ -467,6 +532,10 @@ function createWindow() {
 
   wc.on('context-menu', (e, params) => contextMenu(wc, params));
 
+  // Gespeicherten Zoom bei jedem Laden setzen; Strg + Mausrad läuft über dieselben Stufen
+  wc.on('dom-ready', () => wc.setZoomFactor(settings.get('zoom') || 1));
+  wc.on('zoom-changed', (e, direction) => zoomStep(direction === 'in' ? 1 : -1));
+
   // Bei Verbindungsfehler (z. B. kein Internet beim Start) nach 10 s neu versuchen
   wc.on('did-fail-load', (e, code, desc, url, isMainFrame) => {
     if (isMainFrame && code !== -3) {
@@ -487,6 +556,7 @@ function createWindow() {
 app.whenReady().then(() => {
   log.init();
   settings.load();
+  nativeTheme.themeSource = settings.get('theme') || 'system';
   setupSession(session.fromPartition(PARTITION));
   buildMenu();
   createWindow();

@@ -119,6 +119,59 @@ async function testAutostart() {
   if (before) await inMain("mod('autostart').setEnabled(true)");
 }
 
+const clickMenu = (id) => inMain(`electron.Menu.getApplicationMenu().getMenuItemById('${id}').click(), true`);
+
+// Während die Seite neu lädt, schlagen Abfragen fehl: dann einfach weiter warten
+const pageValue = (expression) => async () => {
+  try { return await inPage(expression); } catch { return undefined; }
+};
+
+async function testZoom() {
+  const zoom = () => inMain('win.webContents.getZoomFactor()');
+  const saved = () => inMain("mod('settings').get('zoom')");
+  const near = (value) => Math.round(value * 100) / 100;
+
+  await clickMenu('zoom-in');
+  expect('Vergrößern', near(await zoom()), 1.1);
+  await clickMenu('zoom-out');
+  await clickMenu('zoom-out');
+  expect('Verkleinern', near(await zoom()), 0.9);
+  await clickMenu('zoom-in');
+  await clickMenu('zoom-in');
+  expect('Zoom gespeichert', await saved(), 1.1);
+
+  await inMain("mod('settings').set('zoom', 1.5), true");
+  await inPage('location.reload(); true');
+  await sleep(1000);
+  expect('Zoom übersteht Neuladen', near(await until(async () => near(await zoom()), 1.5, 20_000)), 1.5);
+
+  await clickMenu('zoom-reset');
+  expect('Originalgröße', near(await zoom()), 1);
+  await inMain("mod('settings').set('zoom', 2), true");
+  await clickMenu('zoom-in');
+  expect('Nicht größer als 200 %', await saved(), 2);
+  await clickMenu('zoom-reset');
+}
+
+async function testTheme() {
+  const prefersDark = pageValue("matchMedia('(prefers-color-scheme: dark)').matches");
+  const stored = pageValue("localStorage.getItem('theme')");
+
+  await clickMenu('theme-dark');
+  expect('Dunkel: Seite meldet dunkles Schema', await until(prefersDark, true, 20_000), true);
+  expect('Dunkel: Wahl für WhatsApp gesetzt', await until(stored, '"dark"', 20_000), '"dark"');
+  expect('Dunkel: gespeichert', await inMain("mod('settings').get('theme')"), 'dark');
+
+  await clickMenu('theme-light');
+  expect('Hell: Seite meldet helles Schema', await until(prefersDark, false, 20_000), false);
+  expect('Hell: Wahl für WhatsApp gesetzt', await until(stored, '"light"', 20_000), '"light"');
+
+  await clickMenu('theme-system');
+  expect('System: Wahl für WhatsApp entfernt', await until(stored, null, 20_000), null);
+  expect('System: gespeichert', await inMain("mod('settings').get('theme')"), 'system');
+  expect('System: Quelle zurückgesetzt', await inMain('electron.nativeTheme.themeSource'), 'system');
+}
+
 async function testCloseToTray() {
   // Erstes Schließen fragt nach, das Fenster bleibt dabei offen (Dialog nicht bedienbar im Test)
   await inMain("mod('settings').set('closeHintShown', true), true");
@@ -164,6 +217,8 @@ async function run() {
           await testTray();
           await testCloseToTray();
           await testAutostart();
+          await testZoom();
+          await testTheme();
           return;
         }
       }

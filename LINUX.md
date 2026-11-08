@@ -111,6 +111,31 @@ Ton und Benachrichtigungen lassen sich zusätzlich in WhatsApp selbst einstellen
 (in WhatsApp Web unter dessen eigenen Einstellungen → Benachrichtigungen). Was
 du dort abschaltest, kommt in Chatfenster auch nicht an.
 
+## Dunkelmodus und Zoom
+
+**Dunkelmodus**
+
+1. In Chatfenster kurz `Alt` drücken, dann erscheint die Menüleiste.
+2. Menü **Ansicht** → **Darstellung** → **Wie das System**, **Hell** oder **Dunkel**.
+3. Die Seite lädt einmal neu, deine Anmeldung bleibt erhalten.
+
+Die **Anmeldeseite mit dem QR-Code** bleibt immer hell, das legt WhatsApp so fest.
+Erst nach der Anmeldung siehst du das gewählte Aussehen.
+
+In WhatsApp selbst gibt es ebenfalls eine Einstellung für das Design. Wenn du
+beide benutzt, gilt die, die du zuletzt geändert hast.
+
+**Schrift und Inhalt größer oder kleiner**
+
+| Was                | Tasten |
+|--------------------|--------|
+| Vergrößern         | `Strg` + `+` oder `Strg` + Mausrad nach oben |
+| Verkleinern        | `Strg` + `-` oder `Strg` + Mausrad nach unten |
+| Zurück auf normal  | `Strg` + `0` |
+
+Dieselben Punkte stehen auch im Menü **Ansicht**. Die Größe bleibt nach einem
+Neustart erhalten.
+
 ## Auf eine neue Version aktualisieren
 
 1. Prüfen, ob es eine neue Version gibt: in Chatfenster `Alt` drücken →
@@ -166,6 +191,7 @@ auch dort abmelden.
 | Kein Symbol neben der Uhr                       | Der Oberfläche fehlt der Infobereich (z. B. GNOME ohne Erweiterung *AppIndicator*). Chatfenster läuft trotzdem: Ein neuer Start aus dem Startmenü holt das Fenster zurück. Oder den Haken bei **Einstellungen → Beim Schließen im Infobereich weiterlaufen** entfernen. |
 | Fenster ist weg, Programm läuft noch            | Das **X** versteckt nur. Klick auf das Symbol oder Chatfenster aus dem Startmenü starten holt es zurück. |
 | Startet beim Anmelden nicht von selbst          | Unter **Einstellungen** den Haken **Beim Anmelden automatisch starten** prüfen. In den Systemeinstellungen unter **Startprogramme** muss **Chatfenster** aktiv sein. |
+| Dunkelmodus wirkt nicht                         | In WhatsApp selbst kann ein anderes Design eingestellt sein: dort unter Einstellungen das Design prüfen, oder in Chatfenster die Darstellung einmal umschalten. Die Anmeldeseite bleibt immer hell. |
 | Startet gar nicht                               | Im Terminal `chatfenster` starten und die Ausgabe ansehen bzw. mitschicken. |
 
 **Wo liegt was?**
