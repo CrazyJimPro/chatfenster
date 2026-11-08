@@ -63,6 +63,17 @@ jobs:
           Write-Host "Installiert: $exe"
           node tools/smoke-test.mjs $exe
 
+          # Deinstallieren muss den Autostart-Eintrag mitnehmen
+          $run = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+          New-ItemProperty -Path $run -Name 'de.crazyjimpro.chatfenster' -Value "`"$exe`" --autostart" -Force | Out-Null
+          Start-Process "$env:LOCALAPPDATA\Programs\Chatfenster\Uninstall Chatfenster.exe" -ArgumentList '/S' -Wait
+          Start-Sleep -Seconds 3
+          if (Test-Path $exe) { throw "Nach dem Deinstallieren noch vorhanden: $exe" }
+          if (Get-ItemProperty -Path $run -Name 'de.crazyjimpro.chatfenster' -ErrorAction SilentlyContinue) {
+            throw 'Autostart-Eintrag nach dem Deinstallieren noch vorhanden'
+          }
+          Write-Host 'Deinstallation sauber'
+
       - name: Paket testen (Linux)
         if: runner.os == 'Linux'
         run: |

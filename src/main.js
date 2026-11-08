@@ -7,6 +7,7 @@ const fs = require('fs');
 const settings = require('./settings');
 const log = require('./log');
 const tray = require('./tray');
+const autostart = require('./autostart');
 
 const APP_URL = 'https://web.whatsapp.com/';
 const PARTITION = 'persist:chatfenster';
@@ -366,6 +367,23 @@ function buildMenu() {
             settings.set('closeHintShown', true); // Frage ist damit beantwortet
           },
         },
+        { type: 'separator' },
+        {
+          label: 'Beim Anmelden automatisch starten',
+          type: 'checkbox',
+          checked: autostart.isEnabled(),
+          click: (item) => {
+            autostart.setEnabled(item.checked);
+            buildMenu(); // zeigt den echten Stand und schaltet den Punkt darunter frei
+          },
+        },
+        {
+          label: 'Dabei nur als Symbol starten, ohne Fenster',
+          type: 'checkbox',
+          enabled: autostart.isEnabled(),
+          checked: settings.get('autostartHidden') === true,
+          click: (item) => settings.set('autostartHidden', item.checked),
+        },
       ],
     },
     {
@@ -416,7 +434,8 @@ function createWindow() {
   });
 
   if (settings.get('maximized')) win.maximize();
-  win.once('ready-to-show', () => win.show());
+  const startHidden = autostart.startedByAutostart() && settings.get('autostartHidden') === true;
+  win.once('ready-to-show', () => { if (!startHidden) win.show(); });
   win.on('focus', () => win.flashFrame(false));
   trackWindowState();
   win.on('close', handleClose);

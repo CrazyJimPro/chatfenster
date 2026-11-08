@@ -79,6 +79,21 @@ möchtest (**Weiterlaufen** oder **Beenden**).
 Schließen im Infobereich weiterlaufen** entfernen. Dann beendet das **X**
 Chatfenster wieder ganz.
 
+## Automatisch starten beim Anmelden
+
+1. In Chatfenster kurz `Alt` drücken, dann erscheint die Menüleiste.
+2. Menü **Einstellungen** → Haken bei **Beim Anmelden automatisch starten** setzen.
+3. Möchtest du beim Anmelden kein Fenster sehen: Zusätzlich den Haken bei
+   **Dabei nur als Symbol starten, ohne Fenster** setzen. Chatfenster liegt dann
+   nur als Symbol neben der Uhr. Ein Klick darauf öffnet das Fenster.
+
+Beim nächsten Anmelden startet Chatfenster von selbst. Zum Abschalten
+denselben Haken wieder entfernen.
+
+Der Eintrag erscheint auch unter **Start** → **Einstellungen** → **Apps** →
+**Autostart** und im Task-Manager. Wenn du ihn dort abschaltest, ist auch der
+Haken in Chatfenster weg. Beim Aktualisieren bleibt der Autostart erhalten, beim
+Deinstallieren wird er entfernt.
 ## Benachrichtigungen einstellen
 
 Bei neuen Nachrichten erscheint unten rechts über der Uhr eine Benachrichtigung mit Name und
@@ -153,6 +168,7 @@ auch dort abmelden.
 | Ich will komplett neu anfangen                 | Chatfenster beenden (`Strg` + `Q`), Ordner `%APPDATA%\Chatfenster` löschen, neu starten und neu scannen. |
 | Keine Benachrichtigungen                        | Siehe [Benachrichtigungen einstellen](#benachrichtigungen-einstellen): Haken unter **Einstellungen** prüfen, Test-Benachrichtigung senden, Windows-Einstellungen prüfen. |
 | Fenster ist weg, Programm läuft noch            | Das **X** versteckt nur. Klick auf das Symbol neben der Uhr (eventuell hinter dem Pfeil **^**) oder Chatfenster aus dem Startmenü starten holt es zurück. |
+| Startet beim Anmelden nicht von selbst          | Unter **Einstellungen** den Haken **Beim Anmelden automatisch starten** prüfen. Unter **Start** → **Einstellungen** → **Apps** → **Autostart** muss **Chatfenster** eingeschaltet sein. |
 | Installer meldet, Chatfenster laufe noch      | Chatfenster beenden (`Strg` + `Q` oder Rechtsklick auf das Symbol → **Beenden**). Wenn es hängt: Task-Manager (`Strg` + `Umschalt` + `Esc`) → **Chatfenster** → **Task beenden**. |
 
 **Wo liegt was?**
@@ -162,3 +178,4 @@ auch dort abmelden.
 | Programm                    | `%LOCALAPPDATA%\Programs\Chatfenster` |
 | Anmeldung, Einstellungen    | `%APPDATA%\Chatfenster` |
 | Logbuch                     | `%APPDATA%\Chatfenster\logs\chatfenster.log` |
+| Autostart-Eintrag (falls an) | Registry: `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, Wert `de.crazyjimpro.chatfenster` |

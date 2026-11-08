@@ -72,6 +72,20 @@ möchtest (**Weiterlaufen** oder **Beenden**).
 Schließen im Infobereich weiterlaufen** entfernen. Dann beendet das **X**
 Chatfenster wieder ganz.
 
+## Automatisch starten beim Anmelden
+
+1. In Chatfenster kurz `Alt` drücken, dann erscheint die Menüleiste.
+2. Menü **Einstellungen** → Haken bei **Beim Anmelden automatisch starten** setzen.
+3. Möchtest du beim Anmelden kein Fenster sehen: Zusätzlich den Haken bei
+   **Dabei nur als Symbol starten, ohne Fenster** setzen. Chatfenster liegt dann
+   nur als Symbol neben der Uhr. Ein Klick darauf öffnet das Fenster.
+
+Beim nächsten Anmelden startet Chatfenster von selbst. Zum Abschalten
+denselben Haken wieder entfernen.
+
+Der Eintrag erscheint auch in den Systemeinstellungen unter **Startprogramme**.
+Startet Chatfenster unter Linux Mint mit etwa 5 Sekunden Verzögerung, ist das
+Absicht: So ist die Leiste mit dem Infobereich schon bereit.
 ## Benachrichtigungen einstellen
 
 Bei neuen Nachrichten erscheint unten rechts am Bildschirmrand eine Benachrichtigung mit Name und
@@ -151,6 +165,7 @@ auch dort abmelden.
 | Keine Benachrichtigungen                        | Siehe [Benachrichtigungen einstellen](#benachrichtigungen-einstellen): Haken unter **Einstellungen** prüfen, Test-Benachrichtigung senden, „Nicht stören“ aus. |
 | Kein Symbol neben der Uhr                       | Der Oberfläche fehlt der Infobereich (z. B. GNOME ohne Erweiterung *AppIndicator*). Chatfenster läuft trotzdem: Ein neuer Start aus dem Startmenü holt das Fenster zurück. Oder den Haken bei **Einstellungen → Beim Schließen im Infobereich weiterlaufen** entfernen. |
 | Fenster ist weg, Programm läuft noch            | Das **X** versteckt nur. Klick auf das Symbol oder Chatfenster aus dem Startmenü starten holt es zurück. |
+| Startet beim Anmelden nicht von selbst          | Unter **Einstellungen** den Haken **Beim Anmelden automatisch starten** prüfen. In den Systemeinstellungen unter **Startprogramme** muss **Chatfenster** aktiv sein. |
 | Startet gar nicht                               | Im Terminal `chatfenster` starten und die Ausgabe ansehen bzw. mitschicken. |
 
 **Wo liegt was?**
@@ -159,5 +174,6 @@ auch dort abmelden.
 |-----------------------------|-----|
 | Programm                    | `/opt/Chatfenster` |
 | Startmenü-Eintrag           | `/usr/share/applications/chatfenster.desktop` |
+| Autostart-Eintrag (falls an) | `~/.config/autostart/chatfenster.desktop` |
 | Anmeldung, Einstellungen    | `~/.config/Chatfenster` |
 | Logbuch                     | `~/.config/Chatfenster/logs/chatfenster.log` |

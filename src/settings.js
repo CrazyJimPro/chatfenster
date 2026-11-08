@@ -12,6 +12,7 @@ const DEFAULTS = {
   notificationPreview: true,
   closeToTray: true,
   closeHintShown: false,
+  autostartHidden: false,
 };
 
 let file = null;

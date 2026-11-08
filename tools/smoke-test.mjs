@@ -6,7 +6,7 @@
 //
 // Aufruf: node tools/smoke-test.mjs <Programmdatei> [weitere Argumente ...]
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -106,6 +106,19 @@ async function testTray() {
   expect('Zähler zurück auf 0', await until(unread, 0), 0);
 }
 
+async function testAutostart() {
+  const isEnabled = () => inMain("mod('autostart').isEnabled()");
+  const before = await isEnabled();
+  expect('Autostart einschalten', await inMain("mod('autostart').setEnabled(true)"), true);
+  expect('Autostart bleibt an', await isEnabled(), true);
+  if (process.platform === 'linux') {
+    const text = readFileSync(join(profile, 'autostart', 'chatfenster.desktop'), 'utf8');
+    expect('Autostart-Eintrag startet mit --autostart', /^Exec=.* --autostart$/m.test(text), true);
+  }
+  expect('Autostart ausschalten', await inMain("mod('autostart').setEnabled(false)"), false);
+  if (before) await inMain("mod('autostart').setEnabled(true)");
+}
+
 async function testCloseToTray() {
   // Erstes Schließen fragt nach, das Fenster bleibt dabei offen (Dialog nicht bedienbar im Test)
   await inMain("mod('settings').set('closeHintShown', true), true");
@@ -150,6 +163,7 @@ async function run() {
           console.log('User-Agent:', last.ua);
           await testTray();
           await testCloseToTray();
+          await testAutostart();
           return;
         }
       }
