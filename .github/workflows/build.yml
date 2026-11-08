@@ -40,11 +40,16 @@ jobs:
           node-version: 22
           cache: npm
 
+      # github-mirror.mjs: Release-Downloads über die API, siehe Kommentar im Skript
       - name: Abhängigkeiten installieren
-        run: npm ci
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/github-mirror.mjs npm ci
 
       - name: Paket bauen
-        run: ${{ matrix.build }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/github-mirror.mjs ${{ matrix.build }}
 
       - name: Starttest (QR-Code erscheint)
         run: ${{ matrix.smoke }}
